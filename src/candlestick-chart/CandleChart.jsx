@@ -5,26 +5,24 @@ import React from "react";
 
 function cschart({width}) {
 
-    var margin = {top: 0, right: 30, bottom: 40, left: 5},
+    var margin = {top: 0, right: 100, bottom: 40, left: 5},
         height = 300, Bheight = 460;
 
     function csrender(selection) {
         selection.each(function() {
 
-            var interval = TIntervals[TPeriod];
-
             var minimal  = d3.min(genData, function(d) { return d.LOW; });
             var maximal  = d3.max(genData, function(d) { return d.HIGH; });
 
             var x = d3.scaleBand()
-                .range([0, width - 20]);
+                .range([0, width - 5]);
 
             var y = d3.scaleLinear()
                 .rangeRound([height, 0]);
 
             var xAxis = d3.axisBottom()
                 .scale(x)
-                .tickFormat(d3.timeFormat(TFormat[interval]));
+                .tickFormat(d3.timeFormat("%Y-%m-%d"));
 
             var yAxis = d3.axisLeft()
                 .scale(y)
@@ -33,11 +31,12 @@ function cschart({width}) {
             x.domain(genData.map(function(d) { return d.TIMESTAMP; }));
             y.domain([minimal, maximal]).nice();
 
-            var xtickdelta   = Math.ceil(60/(width/genData.length))
+            var xtickdelta = Math.ceil(60 / (width / genData.length));
             xAxis.tickValues(x.domain().filter(function(d, i) { return !((i+Math.floor(xtickdelta/2)) % xtickdelta); }));
 
             var barwidth = x.bandwidth();
-            var candlewidth = Math.floor(d3.min([barwidth*0.8, 13])/2)*2+1;
+            // var candlewidth = Math.floor(d3.min([barwidth*0.8, 13])/2)*2+1;
+            var candlewidth = barwidth - 1;
             var delta       = Math.round((barwidth-candlewidth)/2);
 
             d3.select(this).select("svg").remove();
@@ -133,14 +132,14 @@ function barchart({width}) {
         selection.each(function(data) {
 
             var x = d3.scaleBand()
-                .range([0, width - 20]);
+                .range([0, width - 5]);
 
             var y = d3.scaleLinear()
                 .rangeRound([height, 0]);
 
             var xAxis = d3.axisBottom()
                 .scale(x)
-                .tickFormat(d3.timeFormat(TFormat[TIntervals[TPeriod]]));
+                .tickFormat(d3.timeFormat("%Y-%m-%d"));
 
             var yAxis = d3.axisLeft()
                 .scale(y)
@@ -166,8 +165,9 @@ function barchart({width}) {
 //          .attr("transform", "translate(0,0)")
 //          .call(yAxis.orient("left"));
 
-            var barwidth    = x.bandwidth()
-            var fillwidth   = (Math.floor(barwidth*0.9)/2)*2+1;
+            var barwidth = x.bandwidth();
+            // var fillwidth   = (Math.floor(barwidth*0.9)/2)*2+1;
+            var fillwidth   = barwidth - 1; // (Math.floor(barwidth*0.9)/2)*2+1;
             var bardelta    = Math.round((barwidth-fillwidth)/2);
 
             var mbar = svg.selectAll("."+mname+"bar")
@@ -253,14 +253,12 @@ function csheader() {
 
     function cshrender(selection) {
         selection.each(function(data) {
-
-            var interval   = TIntervals[TPeriod];
             var format     = d3.timeFormat("%Y-%m-%d");
             d3.select("#infodate").text(format(data.TIMESTAMP));
-            d3.select("#infoopen").text("Open " + data.OPEN);
-            d3.select("#infoclose").text("Close " + data.CLOSE);
-            d3.select("#infohigh").text("High " + data.HIGH);
-            d3.select("#infolow").text("Low " + data.LOW);
+            d3.select("#infoopen").text(data.OPEN);
+            d3.select("#infoclose").text(data.CLOSE);
+            d3.select("#infohigh").text(data.HIGH);
+            d3.select("#infolow").text(data.LOW);
 
         });
     } // cshrender
@@ -269,82 +267,17 @@ function csheader() {
 } // csheader
 
 var parseDate    = d3.timeParse("%Y-%m-%d");
-var TPeriod      = "3M";
-var TDays        = {"1M":21, "3M":63, "6M":126, "1Y":252, "2Y":504, "4Y":1008 };
-var TIntervals   = {"1M":"day", "3M":"day", "6M":"day", "1Y":"week", "2Y":"week", "4Y":"month" };
-var TFormat      = {"day":"%d %b '%y", "week":"%d %b '%y", "month":"%b '%y" };
 var genRaw, genData;
 
-
-function toSlice(data) {
-    console.log('toSlice(data):', data[0]);
-    return data.slice(-TDays[TPeriod]);
-}
-
 function mainjs({svg, width, height}) {
-    var toPress    = function() {genData = (TIntervals[TPeriod]!=="day")?dataCompress(toSlice(genRaw), TIntervals[TPeriod]):toSlice(genRaw); };
-    // toPress();
-    genData = genRaw
+    genData = genRaw;
     const attrs = {svg, width, height};
     displayAll(attrs);
-    d3.select("#oneM").on("click",   function(){ TPeriod  = "1M"; toPress(); displayAll(attrs); });
-    d3.select("#threeM").on("click", function(){ TPeriod  = "3M"; toPress(); displayAll(attrs); });
-    d3.select("#sixM").on("click",   function(){ TPeriod  = "6M"; toPress(); displayAll(attrs); });
-    d3.select("#oneY").on("click",   function(){ TPeriod  = "1Y"; toPress(); displayAll(attrs); });
-    d3.select("#twoY").on("click",   function(){ TPeriod  = "2Y"; toPress(); displayAll(attrs); });
-    d3.select("#fourY").on("click",  function(){ TPeriod  = "4Y"; toPress(); displayAll(attrs); });
 }
 
 function displayAll({svg, width, height}) {
-    changeClass();
     displayCS({svg, width, height});
     displayGen(genData.length-1);
-}
-
-function changeClass() {
-    if (TPeriod ==="1M") {
-        d3.select("#oneM").classed("active", true);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-    } else if (TPeriod ==="6M") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", true);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-    } else if (TPeriod ==="1Y") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", true);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-    } else if (TPeriod ==="2Y") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", true);
-        d3.select("#fourY").classed("active", false);
-    } else if (TPeriod ==="4Y") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", true);
-    } else {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", true);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-    }
 }
 
 function displayCS({svg, width, height}) {
@@ -394,20 +327,27 @@ class CandleChart extends D3jsComponent {
 
     legend() {
         return <div>
-            <div id="option">
-                <input id="oneM" name="1M" type="button" value="1M"/>
-                <input id="threeM" name="3M" type="button" value="3M"/>
-                <input id="sixM" name="6M" type="button" value="6M"/>
-                <input id="oneY" name="1Y" type="button" value="1Y"/>
-                <input id="twoY" name="2Y" type="button" value="2Y"/>
-                <input id="fourY" name="4Y" type="button" value="4Y"/>
-            </div>
             <div id="infobar">
-                <div id="infodate" className="infohead"></div>
-                <div id="infoopen" className="infobox"></div>
-                <div id="infohigh" className="infobox"></div>
-                <div id="infolow" className="infobox"></div>
-                <div id="infoclose" className="infobox"></div>
+                <div className='infobar-item' style={{width: 100}}>
+                    <div className='infobar-name'>date</div>
+                    <div id="infodate"/>
+                </div>
+                <div className='infobar-item'>
+                    <div className='infobar-name'>open</div>
+                    <div id="infoopen"/>
+                </div>
+                <div className='infobar-item'>
+                    <div className='infobar-name'>close</div>
+                    <div id="infoclose"/>
+                </div>
+                <div className='infobar-item'>
+                    <div className='infobar-name'>high</div>
+                    <div id="infohigh"/>
+                </div>
+                <div className='infobar-item'>
+                    <div className='infobar-name'>low</div>
+                    <div id="infolow"/>
+                </div>
             </div>
         </div>
     }
@@ -416,6 +356,7 @@ class CandleChart extends D3jsComponent {
         const {width, height} = this.props;
         // https://query1.finance.yahoo.com/v7/finance/download/0388.HK?period1=1549724284&period2=1581260284&interval=1d&events=history
         d3.json('/price/historical/1858.HK')
+        // d3.json('/price/historical/BRK.A')
             .then(data => {
                 // console.log('stockdata.csv', data.columns);
                 genRaw = data.map(d => genType(d));

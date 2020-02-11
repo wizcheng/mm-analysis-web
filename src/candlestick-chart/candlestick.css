@@ -51,7 +51,16 @@ rect.bar.fall { fill: #e55039; }
     -moz-box-shadow: none;
     box-shadow: none;
 }
-#infobar   { width: 440px; height: 25px; float: left; padding-top: 5px; text-align: left; font-family: sans-serif; }
+/*#infobar   { width: 440px; height: 25px; float: left; padding-top: 5px; text-align: left; font-family: sans-serif; }*/
+#infobar {
+    display: flex;
+}
+.infobar-item {
+    width: 60px;
+}
+.infobar-name {
+    font-size: 10px;
+}
 .infohead  { width: 140px; height: 25px; margin: 0px 2px; float: left; }
 .infobox   { width: 70px; height: 30px; margin: 0px 2px; float: left; }
 
