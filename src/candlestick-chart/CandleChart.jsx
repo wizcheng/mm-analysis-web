@@ -36,7 +36,7 @@ function cschart({width}) {
 
             var barwidth = x.bandwidth();
             // var candlewidth = Math.floor(d3.min([barwidth*0.8, 13])/2)*2+1;
-            var candlewidth = barwidth - 1;
+            var candlewidth = barwidth - 2;
             var delta       = Math.round((barwidth-candlewidth)/2);
 
             d3.select(this).select("svg").remove();
@@ -167,7 +167,7 @@ function barchart({width}) {
 
             var barwidth = x.bandwidth();
             // var fillwidth   = (Math.floor(barwidth*0.9)/2)*2+1;
-            var fillwidth   = barwidth - 1; // (Math.floor(barwidth*0.9)/2)*2+1;
+            var fillwidth   = barwidth - 2; // (Math.floor(barwidth*0.9)/2)*2+1;
             var bardelta    = Math.round((barwidth-fillwidth)/2);
 
             var mbar = svg.selectAll("."+mname+"bar")
