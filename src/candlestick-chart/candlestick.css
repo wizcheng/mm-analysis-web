@@ -35,6 +35,9 @@
 .candlestick-chart .sigmabar rect { pointer-events: none; }
 .candlestick-chart .sigmabar .hoved { fill: white; }
 
+rect.bar.rise { fill: #78e08f; }
+rect.bar.fall { fill: #e55039; }
+
 #option    { width: 230px; height: 25px; float: left; padding-top: 5px; }
 #option input { cursor: pointer; border-radius: 5px; color: #fff; background: #696d75; border: none; }
 #option input {

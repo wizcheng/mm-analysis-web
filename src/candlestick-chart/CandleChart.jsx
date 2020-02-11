@@ -90,7 +90,7 @@ function cschart({width}) {
                 .attr("class", function(d, i) { return "stick"+i; })
                 .attr("height", function(d) { return y(d.LOW) - y(d.HIGH); })
                 .attr("width", 1)
-                .classed("rise", function(d) { return (d.CLOSE>d.PREV_CLOSE); })
+                .classed("rise", function(d) { return (d.CLOSE>=d.PREV_CLOSE); })
                 .classed("fall", function(d) { return (d.PREV_CLOSE>d.CLOSE); });
 
             var candle = svg.selectAll(".candles")
@@ -106,7 +106,7 @@ function cschart({width}) {
                 .attr("class", function(d, i) { return "candle"+i; })
                 .attr("height", function(d) { return y(d3.min([d.OPEN, d.CLOSE])) - y(d3.max([d.OPEN, d.CLOSE])); })
                 .attr("width", candlewidth)
-                .classed("rise", function(d) { return (d.CLOSE>d.PREV_CLOSE); })
+                .classed("rise", function(d) { return (d.CLOSE>=d.PREV_CLOSE); })
                 .classed("fall", function(d) { return (d.PREV_CLOSE>d.CLOSE); });
 
         });
@@ -181,10 +181,10 @@ function barchart({width}) {
                 .attr("class", mname+"fill")
                 .attr("x", function(d) { return x(d.TIMESTAMP) + bardelta; })
                 .attr("y", function(d) { return y(d[MValue]); })
-                .attr("class", function(d, i) { return mname+i + ` xxx`; })
+                .attr("class", function(d, i) { return mname+i + ' bar'; })
                 .attr("height", function(d) { return y(0) - y(d[MValue]); })
                 .attr("width", fillwidth)
-                .classed("rise", function(d) { return (d.CLOSE>d.PREV_CLOSE); })
+                .classed("rise", function(d) { return (d.CLOSE>=d.PREV_CLOSE); })
                 .classed("fall", function(d) { return (d.PREV_CLOSE>d.CLOSE); });
             ;
         });
