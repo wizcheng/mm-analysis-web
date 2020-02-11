@@ -233,7 +233,6 @@ function csheader() {
             d3.select("#infohigh").text(data.HIGH);
             d3.select("#infolow").text(data.LOW);
             d3.select("#infovolume").text(data.TURNOVER);
-
         });
     } // cshrender
 
@@ -242,6 +241,7 @@ function csheader() {
 
 var parseDate    = d3.timeParse("%Y-%m-%d");
 var genRaw, genData;
+var pointFrom, pointTo;
 
 function mainjs({svg, width, height}) {
     genData = genRaw;
@@ -265,8 +265,31 @@ function displayCS({svg, width, height}) {
 }
 
 function hoverAll({svg}) {
+
+    const computeChange = (from, to) => {
+        const change = to.CLOSE - from.CLOSE;
+        const changePercentage = (change / from.CLOSE * 100).toFixed(1);
+
+        d3.select("#infochangeto").text(to.date);
+        d3.select("#infochange").text(change.toFixed(2));
+        d3.select("#infochangepercentage").text(changePercentage + "%");
+    }
+
     svg.select(".bands").selectAll("rect")
+        .on('mousedown', function(d, i) {
+            pointFrom = d;
+            d3.select("#infochangefrom").text(d.date);
+            console.log('mousedown d:', d);
+        })
+        .on('mouseup', function(d, i) {
+            computeChange(pointFrom, d);
+            pointFrom = null;
+        })
         .on("mouseover", function(d, i) {
+            if (pointFrom) {
+                computeChange(pointFrom, d)
+            }
+
             d3.select(this).classed("hoved", true);
             d3.select(".stick"+i).classed("hoved", true);
             d3.select(".candle"+i).classed("hoved", true);
@@ -359,6 +382,23 @@ class CandleChart extends Component {
                     <div className='infobar-item'>
                         <div className='infobar-name'>volume</div>
                         <div id="infovolume"/>
+                    </div>
+                    <div style={{width: 50}}></div>
+                    <div className='infobar-item' style={{width: 100}}>
+                        <div className='infobar-name'>from</div>
+                        <div id="infochangefrom"/>
+                    </div>
+                    <div className='infobar-item' style={{width: 100}}>
+                        <div className='infobar-name'>to</div>
+                        <div id="infochangeto"/>
+                    </div>
+                    <div className='infobar-item'>
+                        <div className='infobar-name'>change</div>
+                        <div id="infochange"/>
+                    </div>
+                    <div className='infobar-item'>
+                        <div className='infobar-name'>%</div>
+                        <div id="infochangepercentage"/>
                     </div>
                 </div>
             </div>
