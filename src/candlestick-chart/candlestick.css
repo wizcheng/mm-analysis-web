@@ -35,6 +35,9 @@
 .candlestick-chart .sigmabar rect { pointer-events: none; }
 .candlestick-chart .sigmabar .hoved { fill: white; }
 
+rect.bar.rise { fill: #78e08f; }
+rect.bar.fall { fill: #e55039; }
+
 #option    { width: 230px; height: 25px; float: left; padding-top: 5px; }
 #option input { cursor: pointer; border-radius: 5px; color: #fff; background: #696d75; border: none; }
 #option input {
@@ -48,7 +51,16 @@
     -moz-box-shadow: none;
     box-shadow: none;
 }
-#infobar   { width: 440px; height: 25px; float: left; padding-top: 5px; text-align: left; font-family: sans-serif; }
+/*#infobar   { width: 440px; height: 25px; float: left; padding-top: 5px; text-align: left; font-family: sans-serif; }*/
+#infobar {
+    display: flex;
+}
+.infobar-item {
+    width: 60px;
+}
+.infobar-name {
+    font-size: 10px;
+}
 .infohead  { width: 140px; height: 25px; margin: 0px 2px; float: left; }
 .infobox   { width: 70px; height: 30px; margin: 0px 2px; float: left; }
 

@@ -14,7 +14,8 @@ class D3jsComponent extends Component {
         const svg = d3.select(this.canvas.current)
             .append('svg')
             .attr('width', width)
-            .attr('height', height);
+            .attr('height', height)
+            .style('overflow', 'visible');
         this.draw(svg);
     }
 
