@@ -1,0 +1,57 @@
+/* Container
+/* =============================================== */
+.candlestick-container {
+    color: #fff;
+    background: #292f3b;
+    font-size: small;
+    padding: 10px;
+}
+
+/* Candlestick Chart
+/* =============================================== */
+.candlestick-chart .grid { stroke-opacity: .3; }
+.candlestick-chart .axis line,
+.candlestick-chart .axis.xaxis path { fill: none; stroke: darkgrey; shape-rendering: crispEdges; }
+.candlestick-chart .tick text { font: 10px sans-serif; fill: darkgrey; stroke-opacity: .3; }
+.candlestick-chart .axis.yaxis path { fill: none; stroke: #292f3b; }
+
+.candlestick-chart .bands rect { fill: darkgrey; fill-opacity: 0; stroke-opacity: 0; pointer-events: all; shape-rendering: crispEdges; }
+.candlestick-chart .bands .hoved { fill-opacity: .6; }
+.candlestick-chart .sticks rect { pointer-events: none; shape-rendering: crispEdges; }
+.candlestick-chart .sticks .rise, .candlestick-chart .candles .rise { fill: #78e08f; }
+.candlestick-chart .sticks .fall, .candlestick-chart .candles .fall { fill: #e55039; }
+.candlestick-chart .sticks .hoved { stroke: white; }
+.candlestick-chart .candles .hoved { stroke: white; }
+.candlestick-chart .candles rect { pointer-events: none; shape-rendering: crispEdges; }
+
+.candlestick-chart .bbmn { fill: none; stroke: cyan; stroke-width: 1.5px; pointer-events: none; }
+.candlestick-chart .bbup { fill: none; stroke: green; stroke-width: 1.5px; pointer-events: none; }
+.candlestick-chart .bbdn { fill: none; stroke: crimson; stroke-width: 1.5px; pointer-events: none; }
+
+.candlestick-chart .volumebar { fill: darkgrey; }
+.candlestick-chart .volumebar rect { pointer-events: none; }
+.candlestick-chart .volumebar .hoved { fill: white; }
+.candlestick-chart .sigmabar { fill: darkgrey; }
+.candlestick-chart .sigmabar rect { pointer-events: none; }
+.candlestick-chart .sigmabar .hoved { fill: white; }
+
+#option    { width: 230px; height: 25px; float: left; padding-top: 5px; }
+#option input { cursor: pointer; border-radius: 5px; color: #fff; background: #696d75; border: none; }
+#option input {
+    -webkit-box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.75);
+}
+#option .active { cursor: auto; background: #94979d; }
+#option .active {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+#infobar   { width: 440px; height: 25px; float: left; padding-top: 5px; text-align: left; font-family: sans-serif; }
+.infohead  { width: 140px; height: 25px; margin: 0px 2px; float: left; }
+.infobox   { width: 70px; height: 30px; margin: 0px 2px; float: left; }
+
+#volchart .volbar .volfill { fill: crimson; }
+#volchart .sigbar .sigfill { fill: crimson; }
+#volchart input { cursor: pointer; }
