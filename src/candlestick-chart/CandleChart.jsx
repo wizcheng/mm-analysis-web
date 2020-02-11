@@ -1,7 +1,7 @@
-import D3jsComponent from "../d3js/D3jsComponent";
 import * as d3 from 'd3';
 import './candlestick.css';
-import React from "react";
+import React, {Component} from "react";
+import {connect} from "react-redux";
 
 function cschart({width}) {
 
@@ -15,7 +15,7 @@ function cschart({width}) {
             var maximal  = d3.max(genData, function(d) { return d.HIGH; });
 
             var x = d3.scaleBand()
-                .range([0, width - 5]);
+                .range([0, width - 2]);
 
             var y = d3.scaleLinear()
                 .rangeRound([height, 0]);
@@ -132,7 +132,7 @@ function barchart({width}) {
         selection.each(function(data) {
 
             var x = d3.scaleBand()
-                .range([0, width - 5]);
+                .range([0, width - 2]);
 
             var y = d3.scaleLinear()
                 .rangeRound([height, 0]);
@@ -222,33 +222,6 @@ function genType(d) {
     return d;
 }
 
-function timeCompare(date, interval) {
-    if (interval === "week") {
-        return d3.timeMonday(date);
-    } else if (interval === "month") {
-        return d3.timeMonth(date);
-    } else {
-        return d3.timeDay(date);
-    }
-}
-
-function dataCompress(data, interval) {
-    var compressedData  = d3.nest()
-        .key(function(d) { return timeCompare(d.TIMESTAMP, interval); })
-        .rollup(function(v) { return {
-            TIMESTAMP:   timeCompare(d3.values(v).pop().TIMESTAMP, interval),
-            OPEN:        d3.values(v).shift().OPEN,
-            LOW:         d3.min(v, function(d) { return d.LOW;  }),
-            HIGH:        d3.max(v, function(d) { return d.HIGH; }),
-            CLOSE:       d3.values(v).pop().CLOSE,
-            TURNOVER:    d3.mean(v, function(d) { return d.TURNOVER; }),
-            VOLATILITY:  d3.mean(v, function(d) { return d.VOLATILITY; })
-        }; })
-        .entries(data).map(function(d) { return d.values; });
-
-    return compressedData;
-}
-
 function csheader() {
 
     function cshrender(selection) {
@@ -259,6 +232,7 @@ function csheader() {
             d3.select("#infoclose").text(data.CLOSE);
             d3.select("#infohigh").text(data.HIGH);
             d3.select("#infolow").text(data.LOW);
+            d3.select("#infovolume").text(data.TURNOVER);
 
         });
     } // cshrender
@@ -312,62 +286,99 @@ function hoverAll({svg}) {
 
 function displayGen(mark) {
     var header      = csheader();
-    d3.select("#infobar").datum(genData.slice(mark)[0]).call(header);
+    if (genData.length > 0) {
+        d3.select("#infobar").datum(genData.slice(mark)[0]).call(header);
+    }
 }
 
 
-class CandleChart extends D3jsComponent {
+class CandleChart extends Component {
 
-    attributes() {
-        return {
-            containerClassName: 'candlestick-container',
-            svgClassName: "candlestick-chart"
-        }
+    draw() {
+        const {width, height, prices} = this.props;
+        d3.select(this.canvas.current).select('svg').remove();
+        const svg = d3.select(this.canvas.current)
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .style('overflow', 'visible');
+        genRaw = prices.map(d => genType(d));
+        mainjs({svg, width, height});
+
+        // d3.json('/price/historical/AMD')
+        // // d3.json('/price/historical/BRK.A')
+        //     .then(data => {
+        //         // console.log('stockdata.csv', data.columns);
+        //         genRaw = data.map(d => genType(d));
+        //         mainjs({svg, width, height});
+        //     })
+        //     .catch(error => {
+        //         console.log('error', error);
+        //     });
     }
 
-    legend() {
-        return <div>
-            <div id="infobar">
-                <div className='infobar-item' style={{width: 100}}>
-                    <div className='infobar-name'>date</div>
-                    <div id="infodate"/>
-                </div>
-                <div className='infobar-item'>
-                    <div className='infobar-name'>open</div>
-                    <div id="infoopen"/>
-                </div>
-                <div className='infobar-item'>
-                    <div className='infobar-name'>close</div>
-                    <div id="infoclose"/>
-                </div>
-                <div className='infobar-item'>
-                    <div className='infobar-name'>high</div>
-                    <div id="infohigh"/>
-                </div>
-                <div className='infobar-item'>
-                    <div className='infobar-name'>low</div>
-                    <div id="infolow"/>
+
+    constructor() {
+        super();
+        this.canvas = React.createRef();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        this.draw();
+    }
+
+    componentDidMount() {
+    }
+
+    render() {
+        const {ric} = this.props;
+        return <div className={'d3js-component candlestick-container'}>
+            RIC: {ric}
+            <div>
+                <div id="infobar">
+                    <div className='infobar-item' style={{width: 100}}>
+                        <div className='infobar-name'>date</div>
+                        <div id="infodate"/>
+                    </div>
+                    <div className='infobar-item'>
+                        <div className='infobar-name'>open</div>
+                        <div id="infoopen"/>
+                    </div>
+                    <div className='infobar-item'>
+                        <div className='infobar-name'>close</div>
+                        <div id="infoclose"/>
+                    </div>
+                    <div className='infobar-item'>
+                        <div className='infobar-name'>high</div>
+                        <div id="infohigh"/>
+                    </div>
+                    <div className='infobar-item'>
+                        <div className='infobar-name'>low</div>
+                        <div id="infolow"/>
+                    </div>
+                    <div className='infobar-item'>
+                        <div className='infobar-name'>volume</div>
+                        <div id="infovolume"/>
+                    </div>
                 </div>
             </div>
+            <div ref={this.canvas} className='candlestick-chart'/>
         </div>
     }
 
-    draw(svg) {
-        const {width, height} = this.props;
-        // https://query1.finance.yahoo.com/v7/finance/download/0388.HK?period1=1549724284&period2=1581260284&interval=1d&events=history
-        d3.json('/price/historical/1858.HK')
-        // d3.json('/price/historical/BRK.A')
-            .then(data => {
-                // console.log('stockdata.csv', data.columns);
-                genRaw = data.map(d => genType(d));
-                mainjs({svg, width, height});
-            })
-            .catch(error => {
-                console.log('error', error);
-            });
-
-    }
 
 }
 
-export default CandleChart
+const mapStateToProps = state => {
+    return {
+        ric: state.historical_price.ric,
+        prices: state.historical_price.prices
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CandleChart);
