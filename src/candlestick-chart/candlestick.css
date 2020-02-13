@@ -67,3 +67,20 @@ rect.bar.fall { fill: #e55039; }
 #volchart .volbar .volfill { fill: crimson; }
 #volchart .sigbar .sigfill { fill: crimson; }
 #volchart input { cursor: pointer; }
+
+.line {
+    fill: none;
+    stroke: #999;
+    stroke-width: 1px;
+    opacity: 0.5;
+}
+
+.line.sma50 {
+    stroke: #fad390
+}
+.line.sma150 {
+    stroke: #fa983a
+}
+.line.sma200 {
+    stroke: #e55039
+}

@@ -13,7 +13,7 @@ function App() {
                   My App
               </header>
               <HistoricalPriceLoader/>
-              <CandleChart height='500' width={800}/>
+              <CandleChart height='500' width={1000}/>
           </div>
       </Provider>
   );
