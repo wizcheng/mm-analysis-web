@@ -17,7 +17,7 @@ class InfoItem extends Component {
 
 const volumeFormat = d3.format(".2s");
 
-function cschart({width}) {
+function cschart({width, scale}) {
 
     var margin = {top: 0, right: 100, bottom: 40, left: 5},
         height = 300, Bheight = 460;
@@ -25,27 +25,33 @@ function cschart({width}) {
     function csrender(selection) {
         selection.each(function() {
 
-            var minimal  = d3.min(genData, function(d) { return d.LOW; });
-            var maximal  = d3.max(genData, function(d) { return d.HIGH; });
+            var minimal  = d3.min(genData, function(d) { return d.LOW; }) * 0.95;
+            var maximal  = d3.max(genData, function(d) { return d.HIGH; }) * 1.05;
             console.log('minimal is ' + minimal);
             console.log('maximal is ' + maximal);
 
             var x = d3.scaleBand()
                 .range([0, width - 2]);
 
-            var y = d3.scaleLinear()
+            var y = (scale === 'log' ? d3.scaleLog().base(2.71828) : d3.scaleLinear())
                 .rangeRound([height, 0]);
 
             var xAxis = d3.axisBottom()
                 .scale(x)
                 .tickFormat(d3.timeFormat("%Y-%m-%d"));
 
+            const count = 10;
+            const interval = (maximal - minimal) / count;
+            const tickValues = Array.from(Array(count-1).keys()).map(index => (minimal + interval + index * interval).toFixed(1));
+
             var yAxis = d3.axisLeft()
                 .scale(y)
-                .ticks(Math.floor(height/50));
+                // .ticks(Math.floor(height/50));
+                .tickValues(tickValues);
+
 
             x.domain(genData.map(function(d) { return d.TIMESTAMP; }));
-            y.domain([minimal, maximal]).nice();
+            y.domain([minimal, maximal]); //.nice();
 
             var xtickdelta = Math.ceil(60 / (width / genData.length));
             xAxis.tickValues(x.domain().filter(function(d, i) { return !((i+Math.floor(xtickdelta/2)) % xtickdelta); }));
@@ -393,19 +399,19 @@ var parseDate    = d3.timeParse("%Y-%m-%d");
 var genRaw, genData;
 var pointFrom, pointTo;
 
-function mainjs({svg, width, height}) {
+function mainjs({svg, width, height, scale}) {
     genData = genRaw;
-    const attrs = {svg, width, height};
+    const attrs = {svg, width, height, scale};
     displayAll(attrs);
 }
 
-function displayAll({svg, width, height}) {
-    displayCS({svg, width, height});
+function displayAll({svg, width, height, scale}) {
+    displayCS({svg, width, height, scale});
     displayGen(genData.length-1);
 }
 
-function displayCS({svg, width, height}) {
-    var chart = cschart({width, height}).Bheight(460);
+function displayCS({svg, width, height, scale}) {
+    var chart = cschart({width, height, scale}).Bheight(460);
     svg.call(chart);
     var chart2 = barchart({width, height}).mname("volume").margin(320).MValue("TURNOVER");
     svg.datum(genData).call(chart2);
@@ -468,7 +474,7 @@ function displayGen(mark) {
 class CandleChart extends Component {
 
     draw() {
-        const {width, height, prices} = this.props;
+        const {width, height, prices, scale} = this.props;
         d3.select(this.canvas.current).select('svg').remove();
         const svg = d3.select(this.canvas.current)
             .append('svg')
@@ -476,7 +482,7 @@ class CandleChart extends Component {
             .attr('height', height)
             .style('overflow', 'visible');
         genRaw = prices.map(d => genType(d));
-        mainjs({svg, width, height});
+        mainjs({svg, width, height, scale});
 
         // d3.json('/price/historical/AMD')
         // // d3.json('/price/historical/BRK.A')
@@ -506,7 +512,6 @@ class CandleChart extends Component {
     render() {
         const {ric} = this.props;
         return <div className={'d3js-component candlestick-container'}>
-            RIC: {ric}
             <div>
                 <div id="infobar">
                     <InfoItem id='infodate' name='date' width={90}/>
@@ -533,7 +538,8 @@ class CandleChart extends Component {
 const mapStateToProps = state => {
     return {
         ric: state.historical_price.ric,
-        prices: state.historical_price.prices
+        prices: state.historical_price.prices,
+        scale: state.historical_price.scale
     };
 };
 

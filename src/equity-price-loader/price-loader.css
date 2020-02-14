@@ -1,0 +1,64 @@
+.equity-info {
+    background: #292f3b;
+    color: white;
+    padding: 5px 10px 0px 10px;
+}
+
+.equity-info > div {
+    display: flex;
+}
+
+.equity-info a {
+    text-decoration: none;
+    color: #999;
+}
+.equity-info a:hover {
+    color: white;
+}
+
+.equity-info .symbol {
+    font-size: 13px;
+    margin-right: 10px;
+}
+.equity-info .name {
+    font-size: 13px;
+    margin-right: 10px;
+    color: #aaa;
+}
+.equity-info .reference {
+    font-size: 11px;
+    margin-right: 5px;
+    color: #999;
+}
+.equity-info .external {
+    font-size: 11px;
+}
+
+.equity-info .price-last {
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 5px;
+    margin-top: 2px;
+    margin-left: -1px;
+}
+
+.equity-info .price-change, .equity-info .price-change-percentage {
+    font-size: 13px;
+    margin-top: 3px;
+    margin-right: 3px;
+}
+.equity-info .price-date {
+    font-size: 11px;
+    margin-top: 3px;
+    margin-right: 3px;
+    margin-left: 5px;
+    color: #666;
+}
+
+.equity-info .rise {
+    color: #78e08f;
+}
+.equity-info .fall {
+    color: #e55039;
+}
+
