@@ -12,7 +12,9 @@ class HistoricalPriceLoader extends Component {
     render() {
         const {ric, priceType, rangeFrom, rangeTo,
             handleRangeFromChange, handleRangeToChange, handleRicChange, handlePriceTypeChange,
-            load, handleKeyPress} = this.props;
+            load, handleKeyPress,
+            loadingPrice
+        } = this.props;
         return (
             <div>
                 <input type='text' value={ric} onChange={handleRicChange} onKeyDown={e => handleKeyPress(e, ric, rangeFrom, rangeTo, priceType)}/>
@@ -20,6 +22,7 @@ class HistoricalPriceLoader extends Component {
                 <input type='text' value={rangeTo} onChange={handleRangeToChange}/>
                 <input type='text' value={priceType} onChange={handlePriceTypeChange}/>
                 <button onClick={() => load(ric, rangeFrom, rangeTo, priceType)}>Load</button>
+                {loadingPrice ? "Loading" : null}
             </div>
         );
     }
@@ -30,7 +33,8 @@ const mapStateToProps = state => {
         ric: state.historical_price.ric,
         rangeFrom: state.historical_price.rangeFrom,
         rangeTo: state.historical_price.rangeTo,
-        priceType: state.historical_price.priceType
+        priceType: state.historical_price.priceType,
+        loadingPrice: state.historical_price.loadingPrice
     };
 };
 
@@ -38,6 +42,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => {
 
     const loadRaw = ({ric, rangeFrom, rangeTo, priceType}) => {
+        dispatch({
+            type: 'LOADING_START'
+        });
         request
             .get(`/price/${priceType}/${ric}/${rangeFrom}/${rangeTo}`)
             .end((err, res) => {
@@ -45,6 +52,9 @@ const mapDispatchToProps = (dispatch) => {
                     if (it.low <= 0) {
                         console.log(it.date + ' have zero value of ' + it.low)
                     }
+                });
+                dispatch({
+                    type: 'LOADING_END'
                 });
                 dispatch({
                     type: 'HISTORICAL_PRICE_LOADED',
