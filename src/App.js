@@ -8,13 +8,17 @@ import FilterLink from "./FilterLink";
 import { ConnectedRouter } from 'connected-react-router'
 import { Route, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
+import WidthDetector from "./common/width-detector/WidthDetector";
+import ReactResizeDetector from 'react-resize-detector';
 
 
 function Price() {
     return (
         <div className="App">
             <HistoricalPriceLoader/>
-            <CandleChart height='500' width={1000}/>
+            <ReactResizeDetector handleWidth>
+                {({ width, _ }) => <CandleChart height='500' width={width - 30}/>}
+            </ReactResizeDetector>
         </div>
     )
 }

@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux';
 import {counterReducer} from "./counter/reducer";
 import {historicalPriceReducer} from "./equity-price-loader/reducer";
-import { connectRouter } from 'connected-react-router'
+import {connectRouter} from 'connected-react-router';
 
 const createRootReducer = (history) => combineReducers({
     router: connectRouter(history),

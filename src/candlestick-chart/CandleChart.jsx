@@ -17,10 +17,10 @@ class InfoItem extends Component {
 
 const volumeFormat = d3.format(".2s");
 
-function cschart({width, scale}) {
+function cschart({width, height: fullHeight, scale}) {
 
     var margin = {top: 0, right: 100, bottom: 40, left: 5},
-        height = 300, Bheight = 460;
+        height = fullHeight-100, Bheight = fullHeight;
 
     function csrender(selection) {
         selection.each(function() {
@@ -411,9 +411,9 @@ function displayAll({svg, width, height, scale}) {
 }
 
 function displayCS({svg, width, height, scale}) {
-    var chart = cschart({width, height, scale}).Bheight(460);
+    var chart = cschart({width, height, scale});
     svg.call(chart);
-    var chart2 = barchart({width, height}).mname("volume").margin(320).MValue("TURNOVER");
+    var chart2 = barchart({width, height}).mname("volume").margin(height-70).MValue("TURNOVER");
     svg.datum(genData).call(chart2);
     // var chart3 = linechart({width, height}).mname("sigma").margin(400).MValue("RSI");
     // svg.datum(genData).call(chart3);

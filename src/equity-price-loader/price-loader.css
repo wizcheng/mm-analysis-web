@@ -63,8 +63,8 @@
 }
 
 .equity-selector {
-    background-color: #292f3b;
-    padding: 10px;
+    background-color: #393f4b;
+    padding: 20px 10px 10px 10px;
 }
 
 .equity-selector > input, .equity-selector > select {
