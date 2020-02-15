@@ -62,3 +62,20 @@
     color: #e55039;
 }
 
+.equity-selector {
+    background-color: #292f3b;
+    padding: 10px;
+}
+
+.equity-selector > input, .equity-selector > select {
+    margin-right: 5px;
+}
+
+.equity-selector .loading {
+    /*color: greenyellow;*/
+    /*font-size: 14px;*/
+    /*font-weight: bold;*/
+    background-color: orange;
+}
+
+

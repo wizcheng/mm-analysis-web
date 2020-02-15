@@ -7,16 +7,23 @@ import { push } from 'connected-react-router'
 class HistoricalPriceLoader extends Component {
 
     componentDidMount() {
-        const {ric, rangeFrom, rangeTo, load, priceType} = this.props;
-        load(ric, rangeFrom, rangeTo, priceType);
+        const {ric, rangeFrom, rangeTo, load, priceType, scale} = this.props;
+        const {path, updateVariables} = this.props;
+        if (!ric || !rangeFrom || !rangeTo || !priceType || !scale) {
+            let paths = path.split('/');
+            console.log('paths', paths);
+            updateVariables({ric: paths[2], rangeFrom: paths[3], rangeTo: paths[4], priceType: paths[5], scale: paths[6]});
+            load(paths[2], paths[3], paths[4], paths[5], paths[6]);
+        } else {
+            load(ric, rangeFrom, rangeTo, priceType, scale);
+        }
     }
 
     render() {
-        const {ric, priceType, rangeFrom, rangeTo,
-            handleRangeFromChange, handleRangeToChange, handleRicChange, handlePriceTypeChange, handleScaleChange,
-            load, handleKeyPress,
-            loadingPrice, ricDetail, priceLast, scale,
-            goto
+        const {ric, priceType, rangeFrom, rangeTo, scale,
+            updateVariable,
+            load,
+            loadingPrice, ricDetail, priceLast
         } = this.props;
         console.log('priceLast', priceLast);
         let change = (priceLast.close - priceLast.previousClose).toFixed(2);
@@ -29,20 +36,22 @@ class HistoricalPriceLoader extends Component {
 
         return (
             <div>
-                <div>
-                    <input type='text' value={ric} onChange={handleRicChange} onKeyDown={e => handleKeyPress(e, ric, rangeFrom, rangeTo, priceType)}/>
-                    <input type='text' value={rangeFrom} onChange={handleRangeFromChange}/>
-                    <input type='text' value={rangeTo} onChange={handleRangeToChange}/>
-                    <input type='text' value={priceType} onChange={handlePriceTypeChange}/>
-                    <input type='text' value={scale} onChange={handleScaleChange}/>
-                    <button onClick={() => {
-                        goto('/price/xxx/yyy/mmm/nnn/ooo');
-                        // load(ric, rangeFrom, rangeTo, priceType);
-                    }}>Load</button>
-                    {loadingPrice ? "Loading" : null}
-                </div>
-                <div>
-                    symbol: {this.props.symbol}
+                <div className='equity-selector'>
+                    <input type='text' value={ric} onChange={updateVariable.bind(this, 'ric')}/>
+                    <input type='text' value={rangeFrom} onChange={updateVariable.bind(this, 'rangeFrom')}/>
+                    <input type='text' value={rangeTo} onChange={updateVariable.bind(this, 'rangeTo')}/>
+                    <select value={priceType} onChange={updateVariable.bind(this, 'priceType')}>
+                        <option value='daily'>daily</option>
+                        <option value='weekly'>weekly</option>
+                    </select>
+                    <select value={scale} onChange={updateVariable.bind(this, 'scale')}>
+                        <option value='linear'>linear</option>
+                        <option value='log'>log</option>
+                    </select>
+                    {loadingPrice ?
+                        <button className='loading' disabled={true}>Loading ...</button> :
+                        <button onClick={() => {load(ric, rangeFrom, rangeTo, priceType, scale);}}>Load</button>
+                    }
                 </div>
                 <div className='equity-info'>
                     <div>
@@ -68,7 +77,7 @@ class HistoricalPriceLoader extends Component {
 
 const mapStateToProps = state => {
     return {
-        symbol: state.router.symbol,
+        path: state.router.location.pathname,
         ric: state.historical_price.ric,
         ricDetail: state.historical_price.ricDetail,
         priceLast: state.historical_price.priceLast,
@@ -83,7 +92,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
 
-    const loadRaw = ({ric, rangeFrom, rangeTo, priceType}) => {
+    const loadRaw = ({ric, rangeFrom, rangeTo, priceType, scale}) => {
+        console.log(`ric=${ric}, rangeFrom=${rangeFrom}, rangeTo=${rangeTo}, priceType=${priceType}, scale=${scale}`);
+        dispatch(push(`/price/${ric}/${rangeFrom}/${rangeTo}/${priceType}/${scale}`));
         dispatch({
             type: 'LOADING_START'
         });
@@ -124,18 +135,21 @@ const mapDispatchToProps = (dispatch) => {
             });
     };
 
+    const updateVariables = (variables) => {
+        dispatch({
+            type: 'UPDATE_VARIABLES',
+            variables: variables
+        })
+    };
+
+    const updateVariable = (name, event) => {
+        updateVariables({[name]: event.target.value});
+    };
+
     return {
-        handleKeyPress: (event, ric, rangeFrom, rangeTo, priceType) => {
-            if (event.key === 'Enter') {
-                loadRaw({ric, rangeFrom, rangeTo, priceType});
-            }
-        },
-        handleRicChange: (event) => dispatch({ type: 'UPDATE_RIC', ric: event.target.value }),
-        handleRangeFromChange: (event) => dispatch({ type: 'UPDATE_RANGE_FROM', date: event.target.value }),
-        handleRangeToChange: (event) => dispatch({ type: 'UPDATE_RANGE_TO', date: event.target.value }),
-        handlePriceTypeChange: (event) => dispatch({ type: 'UPDATE_PRICE_TYPE', priceType: event.target.value }),
-        handleScaleChange: (event) => dispatch({ type: 'UPDATE_SCALE', scale: event.target.value }),
-        load: (ric, rangeFrom, rangeTo, priceType) => { loadRaw({ric, rangeFrom, rangeTo, priceType}) },
+        updateVariables,
+        updateVariable,
+        load: (ric, rangeFrom, rangeTo, priceType, scale) => { loadRaw({ric, rangeFrom, rangeTo, priceType, scale}) },
         goto: (path) => dispatch(push(path))
     }
 };

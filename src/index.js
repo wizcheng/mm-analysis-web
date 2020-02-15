@@ -4,8 +4,6 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {Provider} from 'react-redux';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom' // react-router v4/v5
-import {ConnectedRouter} from 'connected-react-router';
 import configureStore, {history} from './configure-store';
 
 const store = configureStore();

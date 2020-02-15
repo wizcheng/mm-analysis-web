@@ -13,8 +13,6 @@ import { Link } from 'react-router-dom'
 function Price() {
     return (
         <div className="App">
-            <Link to="/price/xxx/yyy/mmm/mmm">v1</Link>
-            <Link to="/price/dddd/eee/mmm/mmm">v2</Link>
             <HistoricalPriceLoader/>
             <CandleChart height='500' width={1000}/>
         </div>

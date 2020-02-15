@@ -5,20 +5,25 @@ const initialState = {
     ricDetail: {},
     // ric: 'AMD',
     // ric: 'MELI',
-    ric: '2318.HK',
     // ric: '1858.HK',
     // ric: 'AMD',
-    rangeFrom: moment().subtract(6, 'months').format('YYYY-MM-DD'),
-    rangeTo: moment().format('YYYY-MM-DD'),
+    // ric: '2318.HK',
+    // rangeFrom: moment().subtract(6, 'months').format('YYYY-MM-DD'),
+    // rangeTo: moment().format('YYYY-MM-DD'),
     // ric: 'BITA',
     // rangeFrom: '2007-08-01',
     // rangeTo: '2007-12-21',
-    priceType: 'daily',
+    // priceType: 'daily',
     // priceType: 'weekly',
     prices: [],
     loadingPrice: false,
     priceLast: {},
-    scale: 'linear'
+    // scale: 'linear',
+    ric: '',
+    rangeFrom: '',
+    rangeTo: '',
+    priceType: '',
+    scale: ''
 };
 
 export const historicalPriceReducer = function (state = initialState, action) {
@@ -29,6 +34,8 @@ export const historicalPriceReducer = function (state = initialState, action) {
             return {...state, ricDetail: action.ricDetail};
         case "UPDATE_PRICE_LAST":
             return {...state, priceLast: action.price};
+        case "UPDATE_VARIABLES":
+            return {...state, ...action.variables}
         case "UPDATE_RANGE_FROM":
             return {...state, rangeFrom: action.date};
         case "UPDATE_RANGE_TO":
@@ -40,7 +47,7 @@ export const historicalPriceReducer = function (state = initialState, action) {
         case "HISTORICAL_PRICE_LOADED":
             return {...state, prices: action.prices};
         case "LOADING_START":
-            return {...state, loadingPrice: true};
+            return {...state, loadingPrice: true, prices: [], priceLast: {}, ricDetail: {}};
         case "LOADING_END":
             return {...state, loadingPrice: false};
         default:
