@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import request from 'superagent';
 import './price-loader.css';
+import { push } from 'connected-react-router'
 
 class HistoricalPriceLoader extends Component {
 
@@ -14,7 +15,8 @@ class HistoricalPriceLoader extends Component {
         const {ric, priceType, rangeFrom, rangeTo,
             handleRangeFromChange, handleRangeToChange, handleRicChange, handlePriceTypeChange, handleScaleChange,
             load, handleKeyPress,
-            loadingPrice, ricDetail, priceLast, scale
+            loadingPrice, ricDetail, priceLast, scale,
+            goto
         } = this.props;
         console.log('priceLast', priceLast);
         let change = (priceLast.close - priceLast.previousClose).toFixed(2);
@@ -33,8 +35,14 @@ class HistoricalPriceLoader extends Component {
                     <input type='text' value={rangeTo} onChange={handleRangeToChange}/>
                     <input type='text' value={priceType} onChange={handlePriceTypeChange}/>
                     <input type='text' value={scale} onChange={handleScaleChange}/>
-                    <button onClick={() => load(ric, rangeFrom, rangeTo, priceType)}>Load</button>
+                    <button onClick={() => {
+                        goto('/price/xxx/yyy/mmm/nnn/ooo');
+                        // load(ric, rangeFrom, rangeTo, priceType);
+                    }}>Load</button>
                     {loadingPrice ? "Loading" : null}
+                </div>
+                <div>
+                    symbol: {this.props.symbol}
                 </div>
                 <div className='equity-info'>
                     <div>
@@ -60,6 +68,7 @@ class HistoricalPriceLoader extends Component {
 
 const mapStateToProps = state => {
     return {
+        symbol: state.router.symbol,
         ric: state.historical_price.ric,
         ricDetail: state.historical_price.ricDetail,
         priceLast: state.historical_price.priceLast,
@@ -126,7 +135,8 @@ const mapDispatchToProps = (dispatch) => {
         handleRangeToChange: (event) => dispatch({ type: 'UPDATE_RANGE_TO', date: event.target.value }),
         handlePriceTypeChange: (event) => dispatch({ type: 'UPDATE_PRICE_TYPE', priceType: event.target.value }),
         handleScaleChange: (event) => dispatch({ type: 'UPDATE_SCALE', scale: event.target.value }),
-        load: (ric, rangeFrom, rangeTo, priceType) => { loadRaw({ric, rangeFrom, rangeTo, priceType}) }
+        load: (ric, rangeFrom, rangeTo, priceType) => { loadRaw({ric, rangeFrom, rangeTo, priceType}) },
+        goto: (path) => dispatch(push(path))
     }
 };
 
